@@ -29,7 +29,7 @@ def matrix_multiply(x,y):
     row_x = len(x)
     col_x = len(x[0])
     row_y = len(y)
-    col_y = len(y[0])
+    col_y = len(y[0])  1
     if col_x != row_y:
         return "Error: row, column mismatch"
     row_col = col_x
@@ -67,22 +67,45 @@ def lu_decompose(A):
     return lower_mat, upper_mat
     
 
+def lower_liner_solver(L, B):
+    n = len(B)
+    Y = [0.0 for _ in range(n)]
+    for i in range(n):
+        sum_y = 0
+        for j in range(i):
+            sum_y += Y[j]*L[i][j]
+        Y[i] = B[i] - sum_y
+
+    return Y
+
+def upper_linear_solver(U, Y):
+    n = len(Y)
+    X = [0.0 for _ in range(n)]
+    for i in range(n-1,-1,-1):
+        sum_x=0
+        for j in range(n-1,i,-1):
+            sum_x += X[j]*U[i][j]
+        X[i] = (Y[i]-sum_x)/U[i][i]
+
+    return X
+
 
 def linear_solver(A, B):
     L, U = lu_decompose(A)
-    print(L)
-    print(U)
+    Y = lower_liner_solver(L, B)
+    X = upper_linear_solver(U, Y)
+    return X
     
 
 def linear_regression(X, y):
     X_trans = transpose(X)
+
     XTX = matrix_multiply(X_trans, X)
-    #XTX_inverse = matrix_inversion(XTX)
 
     XTy = matrix_multiply(X_trans, y)
 
     beta = linear_solver(XTX, XTy)
-
+    print(beta)
     y_pred = matrix_multiply(beta, X)
 
     return y_pred
@@ -105,14 +128,10 @@ def kFoldValidation():
 
 def main():
     #kFoldValidation()
-    '''x = [[1,2,3], [6,7,8], [4,5,6]]
-    xt=transpose(x)
-    print(xt)'''
     x = [[1,1,1], [3,1,-3], [1,-2,-5]]
     y = [1,5,10]
-    '''xy = matrix_multiply(x,y)
-    print(xy)'''
-    linear_solver(x,y)
+    linear_regression(x, y)
+
     print("Hello from linear-regression!")
 
 
