@@ -7,14 +7,12 @@ from math import sqrt
 
 
 def read_data():
-    filepath = Path(__file__).parent.parent / 'iris.data.csv'
+    filepath = Path(__file__).parent.parent / 'boston_housing.csv'
     data = read_csv(filepath)
 
-    X = data.iloc[:, :-1].to_numpy().tolist()
+    X = data.iloc[:, :-1].to_numpy()
 
-    y = data.iloc[:, -1]
-    mapping = {v: i for i, v in enumerate(sorted(y.unique()), start=1)}
-    y = y.map(mapping).to_numpy().reshape(-1, 1).tolist()
+    y = data.iloc[:, -1].to_numpy().reshape(-1, 1)
 
     return X, y
 
@@ -126,7 +124,6 @@ def y_plot(y_test, y_pred):
     show()
 
 def perfomance_scores(y_test, y_pred):
-    y_plot(y_test, y_pred)
     n = len(y_pred)
 
     mean_absolute_error = sum(abs(y_test[i][0]-y_pred[i][0]) for i in range(n))/n
@@ -144,6 +141,8 @@ def perfomance_scores(y_test, y_pred):
     r_squared = 1 - (residual_sum_sqaures/total_sum_squares)
     print(f"R Squared Value: {r_squared:.2f}")
 
+    y_plot(y_test, y_pred)
+
     return {
         'mae': mean_absolute_error,
         'mse': mean_square_error,
@@ -155,7 +154,7 @@ def perfomance_scores(y_test, y_pred):
 
 def kFoldValidation():
     X, y = read_data()
-    kf = KFold(n_splits=3, shuffle=True, random_state=2)
+    kf = KFold(n_splits=4, shuffle=True, random_state=2)
     
     all_metrics = {'mae': [], 'mse': [], 'rmse': [], 'r2': []}
     
